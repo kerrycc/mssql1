@@ -21,11 +21,13 @@ router.get('/', function(req, res, next) {
 
     //create Request object
         var request=new sql.Request();
-        request.query('select * from SalesLT.Address',function(err,recordset){
-            if(err) console.log(err);
-
-    //send records as a response
+        request.query('select * from SalesLT.Address').then(function(recordset){
             res.send(recordset);
+        }).catch(function(err) {
+            console.log('Request error: ' + err);
+        }).then(function(){
+            console.log('Close DB');
+            sql.close();
         });
     });
 
@@ -60,7 +62,7 @@ router.get('/update', function(req, res, next) {
         }).then(function(){
             console.log('Close DB');
             sql.close();
-        });;
+        });
     });
 
     //res.render('index', { title: 'Express' });
