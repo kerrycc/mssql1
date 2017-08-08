@@ -204,7 +204,7 @@ router.delete('/:id', function(req, res, next) {
     //res.render('index', { title: 'Express' });
 });
 
-router.post('/test', function(req, res, next) {
+router.get('/test/insert', function(req, res, next) {
 
     var sql=require('mssql');
     //config for your database
@@ -224,7 +224,7 @@ router.post('/test', function(req, res, next) {
 
         //create Request object
         var request=new sql.Request();
-        request.query('insert into Message (Msg, IsActive, CreateBy, CreateTime, UpdateBy, UpdateTime) VALUES (\'Hello World\', 1, \'kerry\', GETDATE(), \'kerry\', GETDATE())').then(function(result) {
+        request.query('insert into Message (Msg, IsActive, CreateBy, CreateTime, UpdateBy, UpdateTime) VALUES (\'' +  (new Date()).toJSON() + '\', 1, \'kerry\', GETDATE(), \'kerry\', GETDATE())').then(function(result) {
             console.log(result.rowsAffected)
             res.send(result);
         }).catch(function(err) {
