@@ -230,7 +230,7 @@ router.get('/test/insert', function(req, res, next) {
             res.send(result);
         }).catch(function(err) {
             //console.log('Request error: ' + err);
-            request.query('insert into Message (Msg, From) VALUES (\'' + err  + '\', \'' + str + '\')').then(function(result) {
+            request.query('insert into ErrorMsg (Msg, From) VALUES (\'' + err  + '\', \'' + str + '\')').then(function(result) {
                 //console.log(result.rowsAffected)
                 res.send(result);
             });
