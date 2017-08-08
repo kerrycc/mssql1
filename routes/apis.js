@@ -1,5 +1,16 @@
-var express=require('express');
+var express = require('express');
 var router = express.Router();
+var sql = require('mssql');
+//config for your database
+var config={
+    user:'kerry',
+    password:'asdfQWER1234',
+    server:'servercp.database.windows.net',   //這邊要注意一下!!
+    database:'PVCPS',
+    options: {
+        encrypt: true // Use this if you're on Windows Azure
+    }
+};
 
 router.get('/', function(req, res, next) {
 
@@ -206,38 +217,23 @@ router.delete('/:id', function(req, res, next) {
 
 router.get('/test/insert', function(req, res, next) {
 
-    var sql=require('mssql');
-    //config for your database
-    var config={
-        user:'kerry',
-        password:'asdfQWER1234',
-        server:'servercp.database.windows.net',   //這邊要注意一下!!
-        database:'PVCPS',
-        options: {
-            encrypt: true // Use this if you're on Windows Azure
-        }
-    };
-
+    var conn = new sql.ConnectionPool(config);
     //connect to your database
-    sql.connect(config,function (err) {
-        if(err) console.log(err);
-
-        //create Request object
-        var request=new sql.Request();
+    conn.connect().then(function(){
+        var request = new sql.Request(conn)
         var str = new Date().toJSON();
         request.query('insert into Message (Msg, IsActive, CreateBy, CreateTime, UpdateBy, UpdateTime) VALUES (\'' + str  + '\', 1, \'kerry\', GETDATE(), \'kerry\', GETDATE())').then(function(result) {
-            console.log(result.rowsAffected)
+            console.log(result.rowsAffected);
             res.send(result);
         }).catch(function(err) {
             console.log('Request error: ' + err);
-            sql.close();
         }).then(function(){
-            console.log('Close DB');
-            sql.close();
-        });;
+            conn.close();
+        });
+    }).catch(function(err){
+        console.log(err);
     });
 
-    //res.render('index', { title: 'Express' });
 });
 
 module.exports = router;
