@@ -224,11 +224,16 @@ router.get('/test/insert', function(req, res, next) {
 
         //create Request object
         var request=new sql.Request();
-        request.query('insert into Message (Msg, IsActive, CreateBy, CreateTime, UpdateBy, UpdateTime) VALUES (\'' +  (new Date()).toJSON() + '\', 1, \'kerry\', GETDATE(), \'kerry\', GETDATE())').then(function(result) {
-            console.log(result.rowsAffected)
+        var str = new Date().toJSON();
+        request.query('insert into Message (Msg, IsActive, CreateBy, CreateTime, UpdateBy, UpdateTime) VALUES (\'' + str  + '\', 1, \'kerry\', GETDATE(), \'kerry\', GETDATE())').then(function(result) {
+            //console.log(result.rowsAffected)
             res.send(result);
         }).catch(function(err) {
-            console.log('Request error: ' + err);
+            //console.log('Request error: ' + err);
+            request.query('insert into Message (Msg, From) VALUES (\'' + err  + '\', \'' + str + '\')').then(function(result) {
+                //console.log(result.rowsAffected)
+                res.send(result);
+            });
         }).then(function(){
             console.log('Close DB');
             sql.close();
