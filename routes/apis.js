@@ -229,10 +229,10 @@ router.get('/test/insert', function(req, res, next) {
             //console.log(result.rowsAffected)
             res.send(result);
         }).catch(function(err) {
-            //console.log('Request error: ' + err);
-            request.query('insert into ErrorMsg (Msg, From) VALUES (\'' + err  + '\', \'' + str + '\')').then(function(result) {
+            console.log('Request error: ' + err);
+            request.query('insert into ErrorMsg (Msg, From) VALUES (\'' + err  + '\', \'' + str + '\')').then(function(result1) {
                 //console.log(result.rowsAffected)
-                res.send(result);
+                res.send(result1);
             });
         }).then(function(){
             console.log('Close DB');
