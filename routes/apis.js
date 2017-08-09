@@ -236,4 +236,34 @@ router.get('/test/insert', function(req, res, next) {
 
 });
 
+router.get('/test/insert1', function(req, res, next) {
+
+    var config1={
+        user:'kerry',
+        password:'asdfQWER1234',
+        server:'servercp.database.windows.net',   //這邊要注意一下!!
+        database:'AdvDB',
+        options: {
+            encrypt: true // Use this if you're on Windows Azure
+        }
+    };
+    var conn = new sql.ConnectionPool(config1);
+    //connect to your database
+    conn.connect().then(function(){
+        var request = new sql.Request(conn)
+        var str = new Date().toJSON();
+        request.query('insert into Message (Msg, IsActive, CreateBy, CreateTime, UpdateBy, UpdateTime) VALUES (\'' + str  + '\', 1, \'kerry\', GETDATE(), \'kerry\', GETDATE())').then(function(result) {
+            console.log(result.rowsAffected);
+            res.send(result);
+        }).catch(function(err) {
+            console.log('Request error: ' + err);
+        }).then(function(){
+            conn.close();
+        });
+    }).catch(function(err){
+        console.log(err);
+    });
+
+});
+
 module.exports = router;
