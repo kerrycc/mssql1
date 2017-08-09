@@ -241,8 +241,8 @@ router.get('/test/insert1', function(req, res, next) {
     var config1={
         user:'kerry',
         password:'asdfQWER1234',
-        server:'servercp.database.windows.net',   //這邊要注意一下!!
-        database:'AdvDB',
+        server:'pvservice.database.windows.net',   //這邊要注意一下!!
+        database:'PVDB',
         options: {
             encrypt: true // Use this if you're on Windows Azure
         }
