@@ -255,4 +255,38 @@ router.get('/test/insert1', function(req, res, next) {
 
 });
 
+router.get('/test/read/:id', function(req, res, next) {
+
+    var config1={
+        user:'kerry',
+        password:'asdfQWER1234',
+        server:'pvservice.database.windows.net',   //這邊要注意一下!!
+        database:'PVDB',
+        options: {
+            encrypt: true // Use this if you're on Windows Azure
+        }
+    };
+
+    var conn = new sql.ConnectionPool(config1);
+    //connect to your database
+    conn.connect().then(function(){
+        var request = new sql.Request(conn)
+        request.query('select * from Message where itemid=' +  req.params.id + ' and isActive = 1').then(function(result){
+            if (result.recordset.length > 0){
+                res.send(result.recordset[0]);
+            }else{
+                res.send(null);
+            }
+        }).catch(function(err) {
+            console.log('Request error: ' + err);
+        }).then(function(){
+            conn.close();
+        });
+    }).catch(function(err){
+        console.log(err);
+    });
+
+    //res.render('index', { title: 'Express' });
+});
+
 module.exports = router;
