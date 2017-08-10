@@ -46,24 +46,10 @@ router.get('/', function(req, res, next) {
 
 router.get('/:id', function(req, res, next) {
 
-    var sql=require('mssql');
-    //config for your database
-    var config={
-        user:'kerry',
-        password:'asdfQWER1234',
-        server:'servercp.database.windows.net',   //這邊要注意一下!!
-        database:'PVCPS',
-        options: {
-            encrypt: true // Use this if you're on Windows Azure
-        }
-    };
-
+    var conn = new sql.ConnectionPool(config);
     //connect to your database
-    sql.connect(config,function (err) {
-        if(err) console.log(err);
-
-        //create Request object
-        var request=new sql.Request();
+    conn.connect().then(function(){
+        var request = new sql.Request(conn)
         request.query('select * from Message where itemid=' +  req.params.id + ' and isActive = 1').then(function(result){
             if (result.recordset.length > 0){
                 res.send(result.recordset[0]);
@@ -72,8 +58,10 @@ router.get('/:id', function(req, res, next) {
         }).catch(function(err) {
             console.log('Request error: ' + err);
         }).then(function(){
-            sql.close();
+            conn.close();
         });
+    }).catch(function(err){
+        console.log(err);
     });
 
     //res.render('index', { title: 'Express' });
