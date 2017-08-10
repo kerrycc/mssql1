@@ -53,8 +53,9 @@ router.get('/:id', function(req, res, next) {
         request.query('select * from Message where itemid=' +  req.params.id + ' and isActive = 1').then(function(result){
             if (result.recordset.length > 0){
                 res.send(result.recordset[0]);
+            }else{
+                res.send(null);
             }
-            res.send(null);
         }).catch(function(err) {
             console.log('Request error: ' + err);
         }).then(function(){
