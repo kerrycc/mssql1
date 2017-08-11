@@ -228,31 +228,44 @@ router.get('/test/insert', function(req, res, next) {
 router.get('/test/insert1', function(req, res, next) {
 
     var config1={
-        user:'kerry',
+        userName:'kerry',
         password:'asdfQWER1234',
-        server:'pvservice.database.windows.net',   //這邊要注意一下!!
-        database:'PVDB',
+        server:'servercp.database.windows.net',   //這邊要注意一下!!
+        //database:'PVCPS',
         options: {
-            encrypt: true // Use this if you're on Windows Azure
+            encrypt: true, // Use this if you're on Windows Azure
+            database:'PVCPS',
+            rowCollectionOnDone: true
         }
     };
-    var conn = new sql.ConnectionPool(config1);
-    //connect to your database
-    conn.connect().then(function(){
-        var request = new sql.Request(conn)
+
+    var Connection  = require('tedious').Connection;
+    var Request = require('tedious').Request;
+
+    var connection = new Connection(config1);
+    connection.on('connect', function(err) {
+        if (err) return console.error(err);
+        //console.log("Connected");
         var str = new Date().toJSON();
-        request.query('insert into Message (Msg, IsActive, CreateBy, CreateTime, UpdateBy, UpdateTime) VALUES (\'' + str  + '\', 1, \'kerry\', GETDATE(), \'kerry\', GETDATE())').then(function(result) {
-            console.log(result.rowsAffected);
-            res.send(result);
-        }).catch(function(err) {
-            console.log('Request error: ' + err);
-        }).then(function(){
-            conn.close();
+        var request = new Request('insert into Message (Msg, IsActive, CreateBy, CreateTime, UpdateBy, UpdateTime) VALUES (\'' + str  + '\', 1, \'kerry\', GETDATE(), \'kerry\', GETDATE())', function(err, r) {
+            if (err) { console.log(err);}
+            console.log(r);
+            res.send(str);
+            connection.close();
         });
-    }).catch(function(err){
-        console.log(err);
+
+        request.on('doneInProc', function(rowCount, more, rows) {
+            //console.log('doneInProc end');
+        });
+
+        request.on('doneProc', function(rowCount, more, rows) {
+            //console.log('doneProc end');
+        });
+
+        connection.execSql(request);
     });
 
+    var a = 0;
 });
 
 // Taipei
@@ -321,6 +334,7 @@ router.get('/test/read2', function(req, res, next) {
     //res.render('index', { title: 'Express' });
 });
 
+//Tedious
 router.get('/test/read', function(req, res, next) {
     var config1={
         userName:'kerry',
@@ -336,7 +350,6 @@ router.get('/test/read', function(req, res, next) {
 
     var Connection  = require('tedious').Connection;
     var Request = require('tedious').Request;
-
 
     //
     var connection = new Connection(config1);
