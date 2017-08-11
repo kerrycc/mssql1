@@ -389,4 +389,103 @@ router.get('/test/read', function(req, res, next) {
     //res.render('index', { title: 'Express' });
 });
 
+//hosting
+router.get('/test/insert3', function(req, res, next) {
+
+    var config1={
+        userName:'kerry',
+        password:'asdfQWER1234',
+        server:'pvservice.database.windows.net',   //這邊要注意一下!!
+        //database:'PVCPS',
+        options: {
+            encrypt: true, // Use this if you're on Windows Azure
+            database:'PVCPS',
+            rowCollectionOnDone: true
+        }
+    };
+
+    var Connection  = require('tedious').Connection;
+    var Request = require('tedious').Request;
+
+    var connection = new Connection(config1);
+    connection.on('connect', function(err) {
+        if (err) return console.error(err);
+        //console.log("Connected");
+        var str = new Date().toJSON();
+        var request = new Request('insert into Message (Msg, IsActive, CreateBy, CreateTime, UpdateBy, UpdateTime) VALUES (\'' + str  + '\', 1, \'kerry\', GETDATE(), \'kerry\', GETDATE())', function(err, r) {
+            if (err) { console.log(err);}
+            console.log(r);
+            res.send(str);
+            connection.close();
+        });
+
+        request.on('doneInProc', function(rowCount, more, rows) {
+            //console.log('doneInProc end');
+        });
+
+        request.on('doneProc', function(rowCount, more, rows) {
+            //console.log('doneProc end');
+        });
+
+        connection.execSql(request);
+    });
+
+    var a = 0;
+});
+
+//hosting
+router.get('/test/read3', function(req, res, next) {
+    var config1={
+        userName:'kerry',
+        password:'asdfQWER1234',
+        server:'pvservice.database.windows.net',   //這邊要注意一下!!
+        //database:'PVCPS',
+        options: {
+            encrypt: true, // Use this if you're on Windows Azure
+            database:'PVCPS',
+            rowCollectionOnDone: true
+        }
+    };
+
+    var Connection  = require('tedious').Connection;
+    var Request = require('tedious').Request;
+
+    //
+    var connection = new Connection(config1);
+    connection.on('connect', function(err) {
+        if (err) return console.error(err);
+        //console.log("Connected");
+        var request = new Request('select * from Message where itemid=1 and isActive = 1', function(err, r) {
+            if (err) { console.log(err);}
+            res.send(result);
+            connection.close();
+        });
+        var result = "";
+        request.on('row', function(columns) {
+            columns.forEach(function(column) {
+                if (column.value === null) {
+                    console.log('NULL');
+                } else {
+                    result+= column.value + " ";
+                }
+            });
+            //console.log(result);
+        });
+
+        request.on('doneInProc', function(rowCount, more, rows) {
+            //console.log('doneInProc end');
+        });
+
+        request.on('doneProc', function(rowCount, more, rows) {
+            //console.log('doneProc end');
+        });
+
+        connection.execSql(request);
+    });
+
+    var a = 0;
+
+    //res.render('index', { title: 'Express' });
+});
+
 module.exports = router;
