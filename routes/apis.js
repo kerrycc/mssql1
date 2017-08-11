@@ -255,7 +255,71 @@ router.get('/test/insert1', function(req, res, next) {
 
 });
 
-router.get('/test/read/:id', function(req, res, next) {
+router.get('/test/insert2', function(req, res, next) {
+
+    var config1={
+        user:'cpadmin',
+        password:'cpadmin@cps',
+        server:'wstest.cyberpower.com',   //這邊要注意一下!!
+        database:'PVCPS',
+        options: {
+            encrypt: true // Use this if you're on Windows Azure
+        }
+    };
+    var conn = new sql.ConnectionPool(config1);
+    //connect to your database
+    conn.connect().then(function(){
+        var request = new sql.Request(conn)
+        var str = new Date().toJSON();
+        request.query('insert into Message (Msg, IsActive, CreateBy, CreateTime, UpdateBy, UpdateTime) VALUES (\'' + str  + '\', 1, \'kerry\', GETDATE(), \'kerry\', GETDATE())').then(function(result) {
+            console.log(result.rowsAffected);
+            res.send(result);
+        }).catch(function(err) {
+            console.log('Request error: ' + err);
+        }).then(function(){
+            conn.close();
+        });
+    }).catch(function(err){
+        console.log(err);
+    });
+
+});
+
+router.get('/test/read2', function(req, res, next) {
+
+    var config1={
+        user:'cpadmin',
+        password:'cpadmin@cps',
+        server:'wstest.cyberpower.com',   //這邊要注意一下!!
+        database:'PVCPS',
+        options: {
+            encrypt: true // Use this if you're on Windows Azure
+        }
+    };
+
+    var conn = new sql.ConnectionPool(config1);
+    //connect to your database
+    conn.connect().then(function(){
+        var request = new sql.Request(conn)
+        request.query('select * from Message where itemid=1 and isActive = 1').then(function(result){
+            if (result.recordset.length > 0){
+                res.send(result.recordset[0]);
+            }else{
+                res.send(null);
+            }
+        }).catch(function(err) {
+            console.log('Request error: ' + err);
+        }).then(function(){
+            conn.close();
+        });
+    }).catch(function(err){
+        console.log(err);
+    });
+
+    //res.render('index', { title: 'Express' });
+});
+
+router.get('/test/read/', function(req, res, next) {
     var config1={
         userName:'kerry',
         password:'asdfQWER1234',
@@ -263,7 +327,8 @@ router.get('/test/read/:id', function(req, res, next) {
         //database:'PVCPS',
         options: {
             encrypt: true, // Use this if you're on Windows Azure
-            database:'PVCPS'
+            database:'PVCPS',
+            rowCollectionOnDone: true
         }
     };
 
@@ -276,7 +341,7 @@ router.get('/test/read/:id', function(req, res, next) {
     connection.on('connect', function(err) {
         if (err) return console.error(err);
         console.log("Connected");
-        var request = new Request('select * from Message where itemid=' +  req.params.id + ' and isActive = 1', function(err) {
+        var request = new Request('select * from Message where itemid=1 and isActive = 1', function(err) {
             if (err) {
                 console.log(err);}
         });
@@ -289,13 +354,27 @@ router.get('/test/read/:id', function(req, res, next) {
                     result+= column.value + " ";
                 }
             });
-            res.send(result);
+            console.log(result);
         });
 
-        request.on('done', function(rowCount, more) {
-            console.log(rowCount + ' rows returned');
+        request.on('done', function(rowCount, more, rows) {
+            console.log('done end');
         });
+
+        request.on('doneInProc', function(rowCount, more, rows) {
+            console.log('doneInProc end');
+        });
+
+        request.on('doneProc', function(rowCount, more, rows) {
+            console.log('doneProc end');
+        });
+
+
         connection.execSql(request);
+    });
+
+    connection.on("end", function(){
+        console.log('connection end');
     });
 
     var a = 0;
