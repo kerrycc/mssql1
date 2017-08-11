@@ -389,7 +389,7 @@ router.get('/test/read', function(req, res, next) {
     //res.render('index', { title: 'Express' });
 });
 
-//hosting
+//hosting Tedious
 router.get('/test/insert3', function(req, res, next) {
 
     var config1={
@@ -433,7 +433,7 @@ router.get('/test/insert3', function(req, res, next) {
     var a = 0;
 });
 
-//hosting
+//hosting Tedious
 router.get('/test/read3', function(req, res, next) {
     var config1={
         userName:'kerry',
@@ -486,6 +486,75 @@ router.get('/test/read3', function(req, res, next) {
     var a = 0;
 
     //res.render('index', { title: 'Express' });
+});
+
+//hosting mssql
+router.get('/test/read4', function(req, res, next) {
+
+    //config for your database
+    var config1={
+        user:'kerry',
+        password:'asdfQWER1234',
+        server:'pvservice.database.windows.net',   //這邊要注意一下!!
+        database:'PVCPS',
+        options: {
+            encrypt: true // Use this if you're on Windows Azure
+        }
+    };
+
+    var conn = new sql.ConnectionPool(config1);
+    //connect to your database
+    conn.connect().then(function(){
+        var request = new sql.Request(conn)
+        request.query('select * from Message where itemid=1 and isActive = 1').then(function(result){
+            if (result.recordset.length > 0){
+                res.send(result.recordset[0]);
+            }else{
+                res.send(null);
+            }
+        }).catch(function(err) {
+            console.log('Request error: ' + err);
+        }).then(function(){
+            conn.close();
+        });
+    }).catch(function(err){
+        console.log(err);
+    });
+
+    //res.render('index', { title: 'Express' });
+});
+
+//hosting mssql
+router.get('/test/insert4', function(req, res, next) {
+
+    //config for your database
+    var config1={
+        user:'kerry',
+        password:'asdfQWER1234',
+        server:'pvservice.database.windows.net',   //這邊要注意一下!!
+        database:'PVCPS',
+        options: {
+            encrypt: true // Use this if you're on Windows Azure
+        }
+    };
+
+    var conn = new sql.ConnectionPool(config1);
+    //connect to your database
+    conn.connect().then(function(){
+        var request = new sql.Request(conn)
+        var str = new Date().toJSON();
+        request.query('insert into Message (Msg, IsActive, CreateBy, CreateTime, UpdateBy, UpdateTime) VALUES (\'' + str  + '\', 1, \'kerry\', GETDATE(), \'kerry\', GETDATE())').then(function(result) {
+            console.log(result.rowsAffected);
+            res.send(result);
+        }).catch(function(err) {
+            console.log('Request error: ' + err);
+        }).then(function(){
+            conn.close();
+        });
+    }).catch(function(err){
+        console.log(err);
+    });
+
 });
 
 module.exports = router;
