@@ -255,6 +255,7 @@ router.get('/test/insert1', function(req, res, next) {
 
 });
 
+// Taipei
 router.get('/test/insert2', function(req, res, next) {
 
     var config1={
@@ -285,6 +286,7 @@ router.get('/test/insert2', function(req, res, next) {
 
 });
 
+// Taipei
 router.get('/test/read2', function(req, res, next) {
 
     var config1={
@@ -319,7 +321,7 @@ router.get('/test/read2', function(req, res, next) {
     //res.render('index', { title: 'Express' });
 });
 
-router.get('/test/read/', function(req, res, next) {
+router.get('/test/read', function(req, res, next) {
     var config1={
         userName:'kerry',
         password:'asdfQWER1234',
@@ -340,10 +342,11 @@ router.get('/test/read/', function(req, res, next) {
     var connection = new Connection(config1);
     connection.on('connect', function(err) {
         if (err) return console.error(err);
-        console.log("Connected");
-        var request = new Request('select * from Message where itemid=1 and isActive = 1', function(err) {
-            if (err) {
-                console.log(err);}
+        //console.log("Connected");
+        var request = new Request('select * from Message where itemid=1 and isActive = 1', function(err, r) {
+            if (err) { console.log(err);}
+            res.send(result);
+            connection.close();
         });
         var result = "";
         request.on('row', function(columns) {
@@ -354,27 +357,18 @@ router.get('/test/read/', function(req, res, next) {
                     result+= column.value + " ";
                 }
             });
-            console.log(result);
-        });
-
-        request.on('done', function(rowCount, more, rows) {
-            console.log('done end');
+            //console.log(result);
         });
 
         request.on('doneInProc', function(rowCount, more, rows) {
-            console.log('doneInProc end');
+            //console.log('doneInProc end');
         });
 
         request.on('doneProc', function(rowCount, more, rows) {
-            console.log('doneProc end');
+            //console.log('doneProc end');
         });
 
-
         connection.execSql(request);
-    });
-
-    connection.on("end", function(){
-        console.log('connection end');
     });
 
     var a = 0;
