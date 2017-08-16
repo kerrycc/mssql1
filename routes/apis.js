@@ -23,7 +23,7 @@ router.get('/insert', function(req, res, next) {
         var request = new Request('insert into Message (Msg, IsActive, CreateBy, CreateTime, UpdateBy, UpdateTime) VALUES (\'' + str  + '\', 1, \'kerry\', GETDATE(), \'kerry\', GETDATE())', function(err, r) {
             if (err) { console.log(err);}
             console.log(r);
-            res.send(str);
+            res.send(null);
             connection.close();
         });
 
