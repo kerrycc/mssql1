@@ -105,7 +105,6 @@ router.post('/add', function(req, res, next) {
     });
 });
 
-
 router.post('/addData', function(req, res, next) {
     var connection = new Connection(config);
     connection.on('connect', function(err) {
@@ -113,9 +112,37 @@ router.post('/addData', function(req, res, next) {
             console.log(err);
             res.send("error" + err);
         }
-
         var data = JSON.parse(req.body.data);
         var request = new Request('insert into MessageTest (Msg, IsActive, CreateBy, CreateTime, UpdateBy, UpdateTime) VALUES (\'' + data.Msg + '\', 1, \'' + data.UserId + '\', GETDATE(), \'' + data.UserId + '\', GETDATE())', function(err, r) {
+            if (err) {
+                console.log(err);
+                res.send("error" + err);
+            }
+            res.send("INSERT ok");
+            connection.close();
+        });
+
+        request.on('doneInProc', function(rowCount, more, rows) {
+            //console.log('doneInProc end');
+        });
+
+        request.on('doneProc', function(rowCount, more, rows) {
+            //console.log('doneProc end');
+        });
+
+        connection.execSql(request);
+    });
+});
+
+router.post('/addJson', function(req, res, next) {
+    var connection = new Connection(config);
+    connection.on('connect', function(err) {
+        if (err) {
+            console.log(err);
+            res.send("error" + err);
+        }
+        var str = JSON.stringify(req.body);
+        var request = new Request('insert into MessageTest (Msg, IsActive, CreateBy, CreateTime, UpdateBy, UpdateTime) VALUES (\'' + str + '\', 1, \'sys\', GETDATE(), \'sys\', GETDATE())', function(err, r) {
             if (err) {
                 console.log(err);
                 res.send("error" + err);
