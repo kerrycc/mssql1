@@ -37,8 +37,6 @@ router.get('/insert', function(req, res, next) {
 
         connection.execSql(request);
     });
-
-    var a = 0;
 });
 
 router.get('/read', function(req, res, next) {
@@ -77,6 +75,65 @@ router.get('/read', function(req, res, next) {
     var a = 0;
 
     //res.render('index', { title: 'Express' });
+});
+
+router.post('/add', function(req, res, next) {
+    var connection = new Connection(config);
+    connection.on('connect', function(err) {
+        if (err) {
+            console.log(err);
+            res.send("error" + err);
+        }
+        var request = new Request('insert into MessageTest (Msg, IsActive, CreateBy, CreateTime, UpdateBy, UpdateTime) VALUES (\'' + req.body.Msg + '\', 1, \'' + req.body.UserId + '\', GETDATE(), \'' + req.body.UserId + '\', GETDATE())', function(err, r) {
+            if (err) {
+                console.log(err);
+                res.send("error" + err);
+            }
+            res.send("INSERT ok");
+            connection.close();
+        });
+
+        request.on('doneInProc', function(rowCount, more, rows) {
+            //console.log('doneInProc end');
+        });
+
+        request.on('doneProc', function(rowCount, more, rows) {
+            //console.log('doneProc end');
+        });
+
+        connection.execSql(request);
+    });
+});
+
+
+router.post('/addData', function(req, res, next) {
+    var connection = new Connection(config);
+    connection.on('connect', function(err) {
+        if (err) {
+            console.log(err);
+            res.send("error" + err);
+        }
+
+        var data = JSON.parse(req.body.data);
+        var request = new Request('insert into MessageTest (Msg, IsActive, CreateBy, CreateTime, UpdateBy, UpdateTime) VALUES (\'' + data.Msg + '\', 1, \'' + data.UserId + '\', GETDATE(), \'' + data.UserId + '\', GETDATE())', function(err, r) {
+            if (err) {
+                console.log(err);
+                res.send("error" + err);
+            }
+            res.send("INSERT ok");
+            connection.close();
+        });
+
+        request.on('doneInProc', function(rowCount, more, rows) {
+            //console.log('doneInProc end');
+        });
+
+        request.on('doneProc', function(rowCount, more, rows) {
+            //console.log('doneProc end');
+        });
+
+        connection.execSql(request);
+    });
 });
 
 module.exports = router;
