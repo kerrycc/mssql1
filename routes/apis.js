@@ -37,6 +37,10 @@ router.get('/insert', function(req, res, next) {
 
         connection.execSql(request);
     });
+
+    connection.on('error', function(err){
+        if (err) return console.error(err);
+    });
 });
 
 router.get('/read', function(req, res, next) {
