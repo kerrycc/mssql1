@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 var Message = require('../models/message');
-var counter = 0;
 
 router.get('/insert', function(req, res, next) {
     var now = new Date();
@@ -18,7 +17,6 @@ router.get('/insert', function(req, res, next) {
         }
         res.send('ok');
     })
-    console.log(counter++);
 });
 
 module.exports = router;
