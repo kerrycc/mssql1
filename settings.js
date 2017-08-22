@@ -1,5 +1,5 @@
 module.exports = {
     db: 'PVCPS',
-    host: 'localhost1',
+    host: 'localhost',
     port: 27017
 }
