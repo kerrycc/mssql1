@@ -167,4 +167,32 @@ router.post('/addJson', function(req, res, next) {
     });
 });
 
+router.get('/getUTC', function(req, res, next) {
+    var utc = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+    res.send(utc);
+});
+
+router.post('/getTimeZone', function(req, res, next) {
+    var mac = req.body.MAC;
+    if (mac.length > 0){
+        var s = mac.substring(0, 1);
+        var asc = s.charCodeAt(0);
+        var num = 0 ;
+        if (asc >= 48 && asc <= 57 ){
+             num = parseInt(s) + 1;
+        }else{
+            asc = s.toUpperCase().charCodeAt(0);
+            if (asc >= 65 && asc <= 70 ){
+                num = asc - 54;
+            }
+        }
+        if (num > 0) num++;
+        if (num % 2 == 1) num = num * -1 ;
+        var result = (0.5 * parseInt(num)).toString();
+        res.send(result);
+    }else{
+        res.send("0");
+    }
+});
+
 module.exports = router;

@@ -7,6 +7,7 @@ router.get('/insert', function(req, res, next) {
     var str = now.toJSON();
     Message.create({
         msg : str,
+        note : "123",
         createBy: 'kerryM',
         updateTime: now,
         updateBy: 'kerryM'
