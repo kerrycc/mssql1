@@ -172,12 +172,14 @@ router.get('/getUTC', function(req, res, next) {
     //var utc = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
 
     // Timestamp
-    var t = new Date().getTime();
-    var utc = t.toString();
-//    var date = new Date(t);
-//    var year = date.getFullYear();
-//    var month = date.getMonth();
-    res.send("UTCTimeStamp:" +utc);
+    var t = (new Date().getTime()) / 1000;
+    //var date = new Date(t * 1000);
+    //var year = date.getFullYear();
+    //var month = date.getMonth();
+    var obj = new Object();
+    obj.UTCTimeStamp = t.toString();
+    var str = JSON.stringify(obj);
+    res.send(str);
 });
 
 router.post('/getTimeZone', function(req, res, next) {
@@ -199,7 +201,10 @@ router.post('/getTimeZone', function(req, res, next) {
         if (num % 2 == 1) num = num * -1 ;
         result = 0.5 * parseInt(num);
     }
-    res.send("TimeZone:" + result.toString());
+    var obj = new Object();
+    obj.TimeZone = result.toString();
+    var str = JSON.stringify(obj);
+    res.send(str);
 });
 
 module.exports = router;
