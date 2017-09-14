@@ -168,12 +168,21 @@ router.post('/addJson', function(req, res, next) {
 });
 
 router.get('/getUTC', function(req, res, next) {
-    var utc = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+    // Date Format
+    //var utc = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+
+    // Timestamp
+    var t = new Date().getTime();
+    var utc = t.toString();
+//    var date = new Date(t);
+//    var year = date.getFullYear();
+//    var month = date.getMonth();
     res.send(utc);
 });
 
 router.post('/getTimeZone', function(req, res, next) {
     var mac = req.body.MAC;
+    var result = 0;
     if (mac.length > 0){
         var s = mac.substring(0, 1);
         var asc = s.charCodeAt(0);
@@ -188,11 +197,9 @@ router.post('/getTimeZone', function(req, res, next) {
         }
         if (num > 0) num++;
         if (num % 2 == 1) num = num * -1 ;
-        var result = (0.5 * parseInt(num)).toString();
-        res.send(result);
-    }else{
-        res.send("0");
+        result = 0.5 * parseInt(num);
     }
+    res.send("TimeZone:" + result.toString());
 });
 
 module.exports = router;
