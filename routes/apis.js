@@ -177,7 +177,7 @@ router.get('/getUTC', function(req, res, next) {
     //var year = date.getFullYear();
     //var month = date.getMonth();
     var obj = new Object();
-    obj.UTCTimeStamp = t.toString();
+    obj.UTCTimeStamp = parseInt(t).toString();
     var str = JSON.stringify(obj);
     res.send(str);
 });
